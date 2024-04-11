@@ -9,5 +9,6 @@ namespace FIAP_MVC_PZ.Data
         {
         }
         public DbSet<User> PZ_Users { get; set; }
+        public DbSet<Avaliacao> PZ_Avaliacoes { get; set; }
     }
 }

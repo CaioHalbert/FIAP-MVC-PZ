@@ -1,4 +1,5 @@
 using FIAP_MVC_PZ.Data;
+using FIAP_MVC_PZ.DTOs;
 using FIAP_MVC_PZ.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,16 +28,37 @@ namespace FIAP_MVC_PZ.Controllers
             return View();
         }
 
-        public IActionResult Register(User resquest)
+        public IActionResult Register(RegisterDTO request)
         {
-            var user = _dataContext.PZ_Users.FirstOrDefault(x => x.UserEmail == resquest.UserEmail);
+            var user = _dataContext.PZ_Users.FirstOrDefault(x => x.UserEmail == request.UserEmail);
             if (user != null)
             {
                 return BadRequest("Usuário ja existe");
             }
-            _dataContext.Add(resquest);
+            User NewUser = new User { 
+                UserEmail = request.UserEmail ,
+                UserName = request.UserName ,
+                UserPassword = request.UserPassword,
+                UserPhone = request.UserPhone ,
+            };
+            _dataContext.Add(NewUser);
             _dataContext.SaveChanges();
             return View();
+        }
+
+        public IActionResult Login(LoginDTO request) 
+        {
+            var find = _dataContext.PZ_Users.FirstOrDefault(x => x.UserEmail == request.UserEmail);
+            if (find == null) 
+            {
+                return NotFound();
+            }
+            if(find.UserPassword != request.UserPassword)
+            {
+                return BadRequest("Senha inválida");
+            }
+            ViewBag.userData = find;
+            return View(find);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
